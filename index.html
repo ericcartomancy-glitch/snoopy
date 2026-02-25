@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Snoopy - ¡Feliz Día!</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    /* ===== RESET & BASE ===== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(160deg, #fef9f0 0%, #fde8d8 40%, #ffd6e0 100%);
+      font-family: 'Nunito', sans-serif;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* ===== FLOATING BONES (background decoration) ===== */
+    .bone {
+      position: fixed;
+      opacity: 0.12;
+      animation: floatBone linear infinite;
+      pointer-events: none;
+      z-index: 0;
+    }
+    @keyframes floatBone {
+      0%   { transform: translateY(110vh) rotate(0deg); opacity: 0; }
+      10%  { opacity: 0.12; }
+      90%  { opacity: 0.12; }
+      100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+    }
+
+    /* ===== FLOATING HEARTS ===== */
+    .heart-particle {
+      position: fixed;
+      pointer-events: none;
+      z-index: 0;
+      animation: floatHeart linear infinite;
+      opacity: 0;
+    }
+    @keyframes floatHeart {
+      0%   { transform: translateY(105vh) scale(0.5); opacity: 0; }
+      10%  { opacity: 0.6; }
+      90%  { opacity: 0.4; }
+      100% { transform: translateY(-5vh) scale(1.2); opacity: 0; }
+    }
+
+    /* ===== STARS ===== */
+    .star {
+      position: fixed;
+      pointer-events: none;
+      z-index: 0;
+      animation: twinkle ease-in-out infinite alternate;
+      opacity: 0;
+    }
+    @keyframes twinkle {
+      0%  { opacity: 0; transform: scale(0.5); }
+      50% { opacity: 0.7; transform: scale(1.2); }
+      100%{ opacity: 0.2; transform: scale(0.8); }
+    }
+
+    /* ===== MAIN LAYOUT ===== */
+    .scene {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px 200px;
+      z-index: 1;
+    }
+
+    /* ===== CARD ===== */
+    .card {
+      background: rgba(255, 255, 255, 0.82);
+      backdrop-filter: blur(12px);
+      border-radius: 28px;
+      padding: 48px 52px;
+      max-width: 480px;
+      width: 100%;
+      box-shadow: 0 20px 60px rgba(255, 100, 130, 0.18), 0 4px 20px rgba(0,0,0,0.06);
+      text-align: center;
+      animation: cardEntrance 1s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+      position: relative;
+      z-index: 2;
+    }
+    @keyframes cardEntrance {
+      from { opacity: 0; transform: translateY(60px) scale(0.85); }
+      to   { opacity: 1; transform: translateY(0)   scale(1); }
+    }
+
+    .card h1 {
+      font-family: 'Dancing Script', cursive;
+      font-size: clamp(2.2rem, 5vw, 3.2rem);
+      color: #c0392b;
+      line-height: 1.2;
+      margin-bottom: 20px;
+      animation: pulseTitle 3s ease-in-out infinite;
+    }
+    @keyframes pulseTitle {
+      0%, 100% { text-shadow: 0 0 0px rgba(192,57,43,0); }
+      50%       { text-shadow: 0 0 18px rgba(192,57,43,0.35); }
+    }
+
+    .card p {
+      font-size: 1.1rem;
+      color: #555;
+      line-height: 1.7;
+      margin-bottom: 18px;
+    }
+
+    .card .tagline {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #e74c3c;
+    }
+
+    /* ===== SNOOPY SVG ILLUSTRATION ===== */
+    .snoopy-wrap {
+      position: relative;
+      width: 340px;
+      flex-shrink: 0;
+      animation: snoopyFloat 4s ease-in-out infinite;
+      z-index: 2;
+      margin-left: 60px;
+    }
+    @keyframes snoopyFloat {
+      0%, 100% { transform: translateY(0px) rotate(-1deg); }
+      50%       { transform: translateY(-18px) rotate(1deg); }
+    }
+
+    /* ===== DOGHOUSE ===== */
+    .doghouse-wrap {
+      position: absolute;
+      bottom: 130px;
+      right: 60px;
+      z-index: 2;
+      animation: doghouseEntrance 1.2s 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
+    }
+    @keyframes doghouseEntrance {
+      from { opacity: 0; transform: translateX(80px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+
+    /* ===== GROUND STRIP ===== */
+    .ground {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      height: 160px;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    /* ===== PEANUTS CHARACTERS STRIP ===== */
+    .characters-strip {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      height: 160px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-around;
+      padding: 0 20px;
+      z-index: 3;
+      pointer-events: none;
+    }
+
+    .char {
+      animation: charBounce ease-in-out infinite alternate;
+    }
+    @keyframes charBounce {
+      from { transform: translateY(0); }
+      to   { transform: translateY(-10px); }
+    }
+
+    /* ===== WOODSTOCK BIRDS ===== */
+    .woodstock {
+      position: fixed;
+      z-index: 4;
+      animation: woodstockFly linear infinite;
+      pointer-events: none;
+    }
+    @keyframes woodstockFly {
+      0%   { transform: translateX(-80px) translateY(0); opacity: 0; }
+      5%   { opacity: 1; }
+      48%  { transform: translateX(50vw) translateY(-30px); }
+      52%  { transform: translateX(50vw) translateY(-30px) scaleX(-1); }
+      95%  { opacity: 1; }
+      100% { transform: translateX(-80px) translateY(0) scaleX(-1); opacity: 0; }
+    }
+
+    /* ===== SPEECH BUBBLE ===== */
+    .speech-bubble {
+      position: absolute;
+      top: -60px;
+      right: -20px;
+      background: white;
+      border-radius: 16px;
+      padding: 10px 16px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #333;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+      white-space: nowrap;
+      animation: bubblePop 0.6s 1.5s cubic-bezier(0.34,1.56,0.64,1) both, bubbleWiggle 3s 2.5s ease-in-out infinite;
+    }
+    .speech-bubble::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 20px;
+      border: 10px solid transparent;
+      border-top-color: white;
+      border-bottom: 0;
+    }
+    @keyframes bubblePop {
+      from { opacity: 0; transform: scale(0.3); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+    @keyframes bubbleWiggle {
+      0%, 100% { transform: rotate(-2deg); }
+      50%       { transform: rotate(2deg); }
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 768px) {
+      .scene { flex-direction: column; padding-bottom: 180px; }
+      .snoopy-wrap { margin-left: 0; margin-top: 30px; width: 260px; }
+      .doghouse-wrap { right: 10px; bottom: 140px; }
+    }
+
+    /* ===== CONFETTI ===== */
+    .confetti-piece {
+      position: fixed;
+      top: -20px;
+      border-radius: 2px;
+      pointer-events: none;
+      z-index: 10;
+      animation: confettiFall linear infinite;
+    }
+    @keyframes confettiFall {
+      0%   { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(110vh) rotate(720deg); opacity: 0.3; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== BACKGROUND PARTICLES ===== -->
+  <div id="particles"></div>
+
+  <!-- ===== MAIN SCENE ===== -->
+  <div class="scene">
+
+    <!-- CARD -->
+    <div class="card">
+      <div class="speech-bubble">¡Woof! 🐾</div>
+      <h1>¡Feliz Día,<br>Amigo Especial!</h1>
+      <p>
+        Eres tan especial como Snoopy en su caseta roja,<br>
+        siempre listo para bailar y llenar de alegría cada momento.
+      </p>
+      <p class="tagline">¡Te quiero muchísimo! 🐶❤️</p>
+    </div>
+
+    <!-- SNOOPY ILLUSTRATION -->
+    <div class="snoopy-wrap">
+      <svg viewBox="0 0 300 380" xmlns="http://www.w3.org/2000/svg" width="300">
+        <!-- Shadow -->
+        <ellipse cx="150" cy="370" rx="80" ry="12" fill="rgba(0,0,0,0.08)"/>
+
+        <!-- Body -->
+        <ellipse cx="150" cy="270" rx="72" ry="80" fill="white" stroke="#222" stroke-width="3"/>
+
+        <!-- Black patch on body -->
+        <path d="M78 240 Q90 200 130 210 Q140 260 110 290 Q85 280 78 240Z" fill="#222"/>
+
+        <!-- Left leg -->
+        <rect x="105" y="330" width="28" height="42" rx="14" fill="white" stroke="#222" stroke-width="3"/>
+        <!-- Right leg -->
+        <rect x="165" y="330" width="28" height="42" rx="14" fill="white" stroke="#222" stroke-width="3"/>
+
+        <!-- Left foot (black) -->
+        <ellipse cx="119" cy="374" rx="20" ry="10" fill="#222"/>
+        <!-- Right foot (black) -->
+        <ellipse cx="179" cy="374" rx="20" ry="10" fill="#222"/>
+
+        <!-- Left arm -->
+        <path d="M80 250 Q40 240 30 260 Q40 280 80 275" fill="white" stroke="#222" stroke-width="3"/>
+        <!-- Right arm (holding heart) -->
+        <path d="M220 250 Q260 235 275 255 Q265 278 220 272" fill="white" stroke="#222" stroke-width="3"/>
+
+        <!-- Heart in right hand -->
+        <g transform="translate(268, 238)" class="heart-hand">
+          <path d="M0,-10 C-12,-22 -28,-10 -14,4 L0,18 L14,4 C28,-10 12,-22 0,-10Z" fill="#e74c3c"/>
+        </g>
+
+        <!-- Head -->
+        <ellipse cx="150" cy="160" rx="78" ry="72" fill="white" stroke="#222" stroke-width="3"/>
+
+        <!-- Black ear (left) -->
+        <path d="M72 130 Q50 90 68 70 Q90 80 100 120Z" fill="#222"/>
+        <!-- White ear highlight -->
+        <path d="M76 125 Q60 95 72 78 Q88 86 96 118Z" fill="#333" opacity="0.3"/>
+
+        <!-- Black patch on head -->
+        <path d="M72 130 Q80 100 110 105 Q118 130 105 155 Q85 158 72 130Z" fill="#222"/>
+
+        <!-- Eyes -->
+        <ellipse cx="128" cy="148" rx="10" ry="11" fill="#222"/>
+        <ellipse cx="172" cy="148" rx="10" ry="11" fill="#222"/>
+        <!-- Eye shine -->
+        <circle cx="131" cy="144" r="3.5" fill="white"/>
+        <circle cx="175" cy="144" r="3.5" fill="white"/>
+
+        <!-- Nose -->
+        <ellipse cx="150" cy="170" rx="14" ry="9" fill="#222"/>
+        <!-- Nose shine -->
+        <ellipse cx="145" cy="167" rx="4" ry="3" fill="#555" opacity="0.6"/>
+
+        <!-- Smile -->
+        <path d="M130 185 Q150 202 170 185" stroke="#222" stroke-width="3" fill="none" stroke-linecap="round"/>
+
+        <!-- Cheeks blush -->
+        <ellipse cx="112" cy="172" rx="12" ry="7" fill="#ffb3c1" opacity="0.5"/>
+        <ellipse cx="188" cy="172" rx="12" ry="7" fill="#ffb3c1" opacity="0.5"/>
+
+        <!-- Collar / scarf (red) -->
+        <path d="M90 215 Q150 230 210 215 Q205 235 150 240 Q95 235 90 215Z" fill="#e74c3c"/>
+        <!-- Collar stripe -->
+        <path d="M90 215 Q150 230 210 215" stroke="#c0392b" stroke-width="2" fill="none"/>
+
+        <!-- Woodstock on head -->
+        <g transform="translate(162, 88)">
+          <!-- Woodstock body -->
+          <ellipse cx="0" cy="0" rx="16" ry="12" fill="#f1c40f"/>
+          <!-- Woodstock head -->
+          <ellipse cx="14" cy="-8" rx="10" ry="9" fill="#f1c40f"/>
+          <!-- Beak -->
+          <path d="M22,-8 L30,-6 L22,-4Z" fill="#e67e22"/>
+          <!-- Eye -->
+          <circle cx="17" cy="-10" r="2.5" fill="#222"/>
+          <circle cx="18" cy="-11" r="1" fill="white"/>
+          <!-- Wing -->
+          <path d="M-14,-4 Q-22,4 -12,10 Q-4,4 0,0Z" fill="#f39c12"/>
+          <!-- Feet -->
+          <line x1="-4" y1="12" x2="-8" y2="20" stroke="#e67e22" stroke-width="2"/>
+          <line x1="4" y1="12" x2="4" y2="20" stroke="#e67e22" stroke-width="2"/>
+          <!-- Tuft -->
+          <path d="M10,-17 Q14,-24 18,-17" stroke="#e67e22" stroke-width="2" fill="none"/>
+        </g>
+      </svg>
+    </div>
+
+  </div>
+
+  <!-- ===== DOGHOUSE ===== -->
+  <div class="doghouse-wrap">
+    <svg viewBox="0 0 200 180" xmlns="http://www.w3.org/2000/svg" width="180">
+      <!-- Roof -->
+      <polygon points="100,10 190,80 10,80" fill="#e74c3c" stroke="#c0392b" stroke-width="2"/>
+      <!-- Roof ridge -->
+      <polygon points="100,10 190,80 175,80 100,22 25,80 10,80" fill="#c0392b"/>
+      <!-- House body -->
+      <rect x="20" y="78" width="160" height="100" rx="4" fill="#f5f5f5" stroke="#ddd" stroke-width="2"/>
+      <!-- Door -->
+      <ellipse cx="100" cy="178" rx="35" ry="42" fill="#8B4513"/>
+      <ellipse cx="100" cy="178" rx="28" ry="35" fill="#6B3410"/>
+      <!-- "SNOOPY" text -->
+      <text x="100" y="68" text-anchor="middle" font-family="Arial Black, sans-serif" font-size="13" font-weight="900" fill="white" letter-spacing="1">SNOOPY</text>
+      <!-- Window left -->
+      <rect x="30" y="95" width="40" height="35" rx="4" fill="#aed6f1" stroke="#85c1e9" stroke-width="2"/>
+      <line x1="50" y1="95" x2="50" y2="130" stroke="#85c1e9" stroke-width="1.5"/>
+      <line x1="30" y1="112" x2="70" y2="112" stroke="#85c1e9" stroke-width="1.5"/>
+      <!-- Window right -->
+      <rect x="130" y="95" width="40" height="35" rx="4" fill="#aed6f1" stroke="#85c1e9" stroke-width="2"/>
+      <line x1="150" y1="95" x2="150" y2="130" stroke="#85c1e9" stroke-width="1.5"/>
+      <line x1="130" y1="112" x2="170" y2="112" stroke="#85c1e9" stroke-width="1.5"/>
+    </svg>
+  </div>
+
+  <!-- ===== GROUND & CHARACTERS STRIP ===== -->
+  <svg class="ground" viewBox="0 0 1440 160" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- Hills -->
+    <ellipse cx="200" cy="160" rx="300" ry="100" fill="#a8d8a8" opacity="0.6"/>
+    <ellipse cx="700" cy="160" rx="400" ry="120" fill="#90c890" opacity="0.7"/>
+    <ellipse cx="1250" cy="160" rx="350" ry="110" fill="#a8d8a8" opacity="0.6"/>
+    <!-- Ground base -->
+    <rect x="0" y="120" width="1440" height="40" fill="#7ec87e" opacity="0.8"/>
+    <!-- Grass blades -->
+    <g fill="#5aaa5a" opacity="0.9">
+      <path d="M0,120 Q5,100 10,120Z"/>
+      <path d="M20,120 Q25,95 30,120Z"/>
+      <path d="M50,120 Q55,105 60,120Z"/>
+      <path d="M80,120 Q85,98 90,120Z"/>
+      <path d="M120,120 Q125,102 130,120Z"/>
+      <path d="M160,120 Q165,96 170,120Z"/>
+      <path d="M200,120 Q205,100 210,120Z"/>
+      <path d="M240,120 Q245,104 250,120Z"/>
+      <path d="M280,120 Q285,97 290,120Z"/>
+      <path d="M320,120 Q325,101 330,120Z"/>
+      <path d="M360,120 Q365,99 370,120Z"/>
+      <path d="M400,120 Q405,103 410,120Z"/>
+      <path d="M440,120 Q445,96 450,120Z"/>
+      <path d="M480,120 Q485,100 490,120Z"/>
+      <path d="M520,120 Q525,98 530,120Z"/>
+      <path d="M560,120 Q565,102 570,120Z"/>
+      <path d="M600,120 Q605,97 610,120Z"/>
+      <path d="M640,120 Q645,101 650,120Z"/>
+      <path d="M680,120 Q685,99 690,120Z"/>
+      <path d="M720,120 Q725,103 730,120Z"/>
+      <path d="M760,120 Q765,96 770,120Z"/>
+      <path d="M800,120 Q805,100 810,120Z"/>
+      <path d="M840,120 Q845,98 850,120Z"/>
+      <path d="M880,120 Q885,102 890,120Z"/>
+      <path d="M920,120 Q925,97 930,120Z"/>
+      <path d="M960,120 Q965,101 970,120Z"/>
+      <path d="M1000,120 Q1005,99 1010,120Z"/>
+      <path d="M1040,120 Q1045,103 1050,120Z"/>
+      <path d="M1080,120 Q1085,96 1090,120Z"/>
+      <path d="M1120,120 Q1125,100 1130,120Z"/>
+      <path d="M1160,120 Q1165,98 1170,120Z"/>
+      <path d="M1200,120 Q1205,102 1210,120Z"/>
+      <path d="M1240,120 Q1245,97 1250,120Z"/>
+      <path d="M1280,120 Q1285,101 1290,120Z"/>
+      <path d="M1320,120 Q1325,99 1330,120Z"/>
+      <path d="M1360,120 Q1365,103 1370,120Z"/>
+      <path d="M1400,120 Q1405,96 1410,120Z"/>
+      <path d="M1430,120 Q1435,100 1440,120Z"/>
+    </g>
+    <!-- Flowers on ground -->
+    <g>
+      <!-- Flower 1 -->
+      <line x1="100" y1="120" x2="100" y2="90" stroke="#27ae60" stroke-width="3"/>
+      <circle cx="100" cy="85" r="12" fill="#e74c3c" opacity="0.85"/>
+      <circle cx="100" cy="85" r="6" fill="#f39c12"/>
+      <!-- Flower 2 -->
+      <line x1="250" y1="120" x2="250" y2="88" stroke="#27ae60" stroke-width="3"/>
+      <circle cx="250" cy="83" r="14" fill="#e91e8c" opacity="0.85"/>
+      <circle cx="250" cy="83" r="7" fill="#f1c40f"/>
+      <!-- Flower 3 -->
+      <line x1="420" y1="120" x2="420" y2="86" stroke="#27ae60" stroke-width="3"/>
+      <circle cx="420" cy="81" r="13" fill="#e74c3c" opacity="0.85"/>
+      <circle cx="420" cy="81" r="6" fill="#f39c12"/>
+      <!-- Flower 4 -->
+      <line x1="580" y1="120" x2="580" y2="90" stroke="#27ae60" stroke-width="3"/>
+      <circle cx="580" cy="85" r="12" fill="#9b59b6" opacity="0.85"/>
+      <circle cx="580" cy="85" r="6" fill="#f1c40f"/>
+      <!-- Flower 5 -->
+      <line x1="740" y1="120" x2="740" y2="87" stroke="#27ae60" stroke-width="3"/>
+      <circle cx="740" cy="82" r="14" fill="#e74c3c" opacity="0.85"/>
+      <circle cx="740" cy="82" r="7" fill="#f39c12"/>
+      <!-- Flower 6 -->
+      <line x1="900" y1="120" x2="900" y2="89" stroke="#27ae60" stroke-width="3"/>
+      <circle cx="900" cy="84" r="13" fill="#e91e8c" opacity="0.85"/>
+      <circle cx="900" cy="84" r="6" fill="#f1c40f"/>
+      <!-- Flower 7 -->
+      <line x1="1060" y1="120" x2="1060" y2="88" stroke="#27ae60" stroke-width="3"/>
+      <circle cx="1060" cy="83" r="12" fill="#9b59b6" opacity="0.85"/>
+      <circle cx="1060" cy="83" r="6" fill="#f39c12"/>
+      <!-- Flower 8 -->
+      <line x1="1220" y1="120" x2="1220" y2="90" stroke="#27ae60" stroke-width="3"/>
+      <circle cx="1220" cy="85" r="14" fill="#e74c3c" opacity="0.85"/>
+      <circle cx="1220" cy="85" r="7" fill="#f1c40f"/>
+      <!-- Flower 9 -->
+      <line x1="1380" y1="120" x2="1380" y2="87" stroke="#27ae60" stroke-width="3"/>
+      <circle cx="1380" cy="82" r="13" fill="#e91e8c" opacity="0.85"/>
+      <circle cx="1380" cy="82" r="6" fill="#f1c40f"/>
+    </g>
+  </svg>
+
+  <!-- ===== WOODSTOCK BIRDS ===== -->
+  <div id="woodstocks"></div>
+
+  <!-- ===== CONFETTI ===== -->
+  <div id="confetti"></div>
+
+  <!-- ===== JAVASCRIPT ===== -->
+  <script>
+    /* ---- Floating bones ---- */
+    const particlesEl = document.getElementById('particles');
+    const boneSVG = `<svg viewBox="0 0 60 24" xmlns="http://www.w3.org/2000/svg" width="48">
+      <circle cx="8" cy="8" r="7" fill="#e74c3c"/>
+      <circle cx="8" cy="16" r="7" fill="#e74c3c"/>
+      <circle cx="52" cy="8" r="7" fill="#e74c3c"/>
+      <circle cx="52" cy="16" r="7" fill="#e74c3c"/>
+      <rect x="8" y="8" width="44" height="8" fill="#e74c3c"/>
+    </svg>`;
+    const heartSVG = `<svg viewBox="0 0 30 28" xmlns="http://www.w3.org/2000/svg" width="22">
+      <path d="M15,24 C15,24 2,14 2,7 C2,3.5 5,1 8.5,1 C11,1 13,2.5 15,5 C17,2.5 19,1 21.5,1 C25,1 28,3.5 28,7 C28,14 15,24 15,24Z" fill="#e74c3c"/>
+    </svg>`;
+    const starSVG = `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="16">
+      <polygon points="12,2 15,9 22,9 16.5,14 18.5,21 12,17 5.5,21 7.5,14 2,9 9,9" fill="#f1c40f"/>
+    </svg>`;
+
+    for (let i = 0; i < 10; i++) {
+      const el = document.createElement('div');
+      el.className = 'bone';
+      el.innerHTML = boneSVG;
+      el.style.left = Math.random() * 100 + 'vw';
+      el.style.animationDuration = (12 + Math.random() * 16) + 's';
+      el.style.animationDelay = (Math.random() * 20) + 's';
+      el.style.fontSize = (0.6 + Math.random() * 0.8) + 'em';
+      particlesEl.appendChild(el);
+    }
+    for (let i = 0; i < 14; i++) {
+      const el = document.createElement('div');
+      el.className = 'heart-particle';
+      el.innerHTML = heartSVG;
+      el.style.left = Math.random() * 100 + 'vw';
+      el.style.animationDuration = (8 + Math.random() * 12) + 's';
+      el.style.animationDelay = (Math.random() * 15) + 's';
+      particlesEl.appendChild(el);
+    }
+    for (let i = 0; i < 20; i++) {
+      const el = document.createElement('div');
+      el.className = 'star';
+      el.innerHTML = starSVG;
+      el.style.left = Math.random() * 100 + 'vw';
+      el.style.top = Math.random() * 80 + 'vh';
+      el.style.animationDuration = (2 + Math.random() * 4) + 's';
+      el.style.animationDelay = (Math.random() * 5) + 's';
+      particlesEl.appendChild(el);
+    }
+
+    /* ---- Woodstock birds ---- */
+    const woodstocksEl = document.getElementById('woodstocks');
+    const woodstockSVG = `<svg viewBox="0 0 60 44" xmlns="http://www.w3.org/2000/svg" width="52">
+      <ellipse cx="22" cy="26" rx="18" ry="14" fill="#f1c40f"/>
+      <ellipse cx="44" cy="16" rx="13" ry="11" fill="#f1c40f"/>
+      <path d="M54,16 L64,18 L54,20Z" fill="#e67e22"/>
+      <circle cx="48" cy="13" r="3" fill="#222"/>
+      <circle cx="49" cy="12" r="1.2" fill="white"/>
+      <path d="M4,20 Q-8,30 4,38 Q14,30 22,26Z" fill="#f39c12"/>
+      <line x1="16" y1="40" x2="10" y2="54" stroke="#e67e22" stroke-width="2.5"/>
+      <line x1="28" y1="40" x2="28" y2="54" stroke="#e67e22" stroke-width="2.5"/>
+      <path d="M40,5 Q44,-4 48,5" stroke="#e67e22" stroke-width="2" fill="none"/>
+    </svg>`;
+    for (let i = 0; i < 3; i++) {
+      const el = document.createElement('div');
+      el.className = 'woodstock';
+      el.innerHTML = woodstockSVG;
+      el.style.top = (10 + i * 12) + 'vh';
+      el.style.animationDuration = (18 + i * 8) + 's';
+      el.style.animationDelay = (i * 7) + 's';
+      woodstocksEl.appendChild(el);
+    }
+
+    /* ---- Confetti ---- */
+    const confettiEl = document.getElementById('confetti');
+    const colors = ['#e74c3c','#f1c40f','#2ecc71','#3498db','#9b59b6','#e91e8c','#ff9800'];
+    for (let i = 0; i < 40; i++) {
+      const el = document.createElement('div');
+      el.className = 'confetti-piece';
+      el.style.left = Math.random() * 100 + 'vw';
+      el.style.width = (6 + Math.random() * 8) + 'px';
+      el.style.height = (10 + Math.random() * 14) + 'px';
+      el.style.background = colors[Math.floor(Math.random() * colors.length)];
+      el.style.animationDuration = (6 + Math.random() * 10) + 's';
+      el.style.animationDelay = (Math.random() * 12) + 's';
+      el.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+      confettiEl.appendChild(el);
+    }
+
+    /* ---- Paw print cursor trail ---- */
+    document.addEventListener('mousemove', (e) => {
+      if (Math.random() > 0.92) {
+        const paw = document.createElement('div');
+        paw.style.cssText = `
+          position:fixed; left:${e.clientX-10}px; top:${e.clientY-10}px;
+          width:20px; height:20px; pointer-events:none; z-index:9999;
+          animation: pawFade 0.8s ease forwards;
+        `;
+        paw.innerHTML = `<svg viewBox="0 0 24 24" width="20" xmlns="http://www.w3.org/2000/svg">
+          <ellipse cx="12" cy="16" rx="7" ry="6" fill="#e74c3c" opacity="0.6"/>
+          <circle cx="6" cy="9" r="3" fill="#e74c3c" opacity="0.6"/>
+          <circle cx="12" cy="7" r="3.5" fill="#e74c3c" opacity="0.6"/>
+          <circle cx="18" cy="9" r="3" fill="#e74c3c" opacity="0.6"/>
+        </svg>`;
+        document.body.appendChild(paw);
+        setTimeout(() => paw.remove(), 900);
+      }
+    });
+
+    /* Inject paw fade keyframe */
+    const style = document.createElement('style');
+    style.textContent = `@keyframes pawFade {
+      from { opacity:0.8; transform: scale(0.5); }
+      to   { opacity:0;   transform: scale(1.4); }
+    }`;
+    document.head.appendChild(style);
+  </script>
+</body>
+</html>
