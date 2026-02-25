@@ -70,8 +70,10 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      gap: 60px;
       padding: 40px 20px 200px;
       z-index: 1;
+      flex-wrap: wrap;
     }
 
     /* ===== CARD ===== */
@@ -119,32 +121,57 @@
       color: #e74c3c;
     }
 
-    /* ===== SNOOPY SVG ILLUSTRATION ===== */
-    .snoopy-wrap {
+    /* ===== SNOOPY IMAGE CONTAINER ===== */
+    .snoopy-image-wrap {
       position: relative;
       width: 340px;
+      height: 340px;
       flex-shrink: 0;
-      animation: snoopyFloat 4s ease-in-out infinite;
+      animation: imageFloat 4s ease-in-out infinite;
       z-index: 2;
-      margin-left: 60px;
+      filter: drop-shadow(0 15px 35px rgba(0,0,0,0.15));
     }
-    @keyframes snoopyFloat {
-      0%, 100% { transform: translateY(0px) rotate(-1deg); }
-      50%       { transform: translateY(-18px) rotate(1deg); }
+    @keyframes imageFloat {
+      0%, 100% { transform: translateY(0px) rotate(-2deg); }
+      50%       { transform: translateY(-20px) rotate(2deg); }
     }
 
-    /* ===== DOGHOUSE ===== */
-    .doghouse-wrap {
+    .snoopy-image-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      filter: drop-shadow(0 8px 20px rgba(255, 100, 130, 0.25));
+    }
+
+    /* ===== HEARTS AROUND IMAGE ===== */
+    .heart-orbit {
       position: absolute;
-      bottom: 130px;
-      right: 60px;
-      z-index: 2;
-      animation: doghouseEntrance 1.2s 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
+      width: 100%;
+      height: 100%;
+      animation: orbitRotate 8s linear infinite;
     }
-    @keyframes doghouseEntrance {
-      from { opacity: 0; transform: translateX(80px); }
-      to   { opacity: 1; transform: translateX(0); }
+    @keyframes orbitRotate {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
     }
+
+    .heart-orbit .heart {
+      position: absolute;
+      width: 32px;
+      height: 32px;
+      animation: heartBeat 1.2s ease-in-out infinite;
+    }
+    @keyframes heartBeat {
+      0%, 100% { transform: scale(1); }
+      50%       { transform: scale(1.3); }
+    }
+
+    .heart-orbit .heart:nth-child(1) { top: -20px; left: 50%; transform: translateX(-50%); animation-delay: 0s; }
+    .heart-orbit .heart:nth-child(2) { top: 15%; right: -20px; animation-delay: 0.3s; }
+    .heart-orbit .heart:nth-child(3) { bottom: 15%; right: -20px; animation-delay: 0.6s; }
+    .heart-orbit .heart:nth-child(4) { bottom: -20px; left: 50%; transform: translateX(-50%); animation-delay: 0.9s; }
+    .heart-orbit .heart:nth-child(5) { bottom: 15%; left: -20px; animation-delay: 1.2s; }
+    .heart-orbit .heart:nth-child(6) { top: 15%; left: -20px; animation-delay: 1.5s; }
 
     /* ===== GROUND STRIP ===== */
     .ground {
@@ -153,27 +180,6 @@
       height: 160px;
       z-index: 1;
       pointer-events: none;
-    }
-
-    /* ===== PEANUTS CHARACTERS STRIP ===== */
-    .characters-strip {
-      position: fixed;
-      bottom: 0; left: 0; right: 0;
-      height: 160px;
-      display: flex;
-      align-items: flex-end;
-      justify-content: space-around;
-      padding: 0 20px;
-      z-index: 3;
-      pointer-events: none;
-    }
-
-    .char {
-      animation: charBounce ease-in-out infinite alternate;
-    }
-    @keyframes charBounce {
-      from { transform: translateY(0); }
-      to   { transform: translateY(-10px); }
     }
 
     /* ===== WOODSTOCK BIRDS ===== */
@@ -192,46 +198,6 @@
       100% { transform: translateX(-80px) translateY(0) scaleX(-1); opacity: 0; }
     }
 
-    /* ===== SPEECH BUBBLE ===== */
-    .speech-bubble {
-      position: absolute;
-      top: -60px;
-      right: -20px;
-      background: white;
-      border-radius: 16px;
-      padding: 10px 16px;
-      font-size: 0.85rem;
-      font-weight: 700;
-      color: #333;
-      box-shadow: 0 4px 14px rgba(0,0,0,0.12);
-      white-space: nowrap;
-      animation: bubblePop 0.6s 1.5s cubic-bezier(0.34,1.56,0.64,1) both, bubbleWiggle 3s 2.5s ease-in-out infinite;
-    }
-    .speech-bubble::after {
-      content: '';
-      position: absolute;
-      bottom: -10px;
-      left: 20px;
-      border: 10px solid transparent;
-      border-top-color: white;
-      border-bottom: 0;
-    }
-    @keyframes bubblePop {
-      from { opacity: 0; transform: scale(0.3); }
-      to   { opacity: 1; transform: scale(1); }
-    }
-    @keyframes bubbleWiggle {
-      0%, 100% { transform: rotate(-2deg); }
-      50%       { transform: rotate(2deg); }
-    }
-
-    /* ===== RESPONSIVE ===== */
-    @media (max-width: 768px) {
-      .scene { flex-direction: column; padding-bottom: 180px; }
-      .snoopy-wrap { margin-left: 0; margin-top: 30px; width: 260px; }
-      .doghouse-wrap { right: 10px; bottom: 140px; }
-    }
-
     /* ===== CONFETTI ===== */
     .confetti-piece {
       position: fixed;
@@ -245,6 +211,19 @@
       0%   { transform: translateY(-20px) rotate(0deg); opacity: 1; }
       100% { transform: translateY(110vh) rotate(720deg); opacity: 0.3; }
     }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 768px) {
+      .scene { 
+        flex-direction: column; 
+        padding-bottom: 180px; 
+        gap: 30px;
+      }
+      .snoopy-image-wrap { 
+        width: 280px; 
+        height: 280px; 
+      }
+    }
   </style>
 </head>
 <body>
@@ -257,132 +236,30 @@
 
     <!-- CARD -->
     <div class="card">
-      <div class="speech-bubble">¡Woof! 🐾</div>
       <h1>¡Feliz Día,<br>Amigo Especial!</h1>
       <p>
-        Eres tan especial como Snoopy en su caseta roja,<br>
-        siempre listo para bailar y llenar de alegría cada momento.
+        Eres tan especial como Snoopy y Woodstock,<br>
+        siempre listo para llenar de alegría cada momento.
       </p>
       <p class="tagline">¡Te quiero muchísimo! 🐶❤️</p>
     </div>
 
-    <!-- SNOOPY ILLUSTRATION -->
-    <div class="snoopy-wrap">
-      <svg viewBox="0 0 300 380" xmlns="http://www.w3.org/2000/svg" width="300">
-        <!-- Shadow -->
-        <ellipse cx="150" cy="370" rx="80" ry="12" fill="rgba(0,0,0,0.08)"/>
-
-        <!-- Body -->
-        <ellipse cx="150" cy="270" rx="72" ry="80" fill="white" stroke="#222" stroke-width="3"/>
-
-        <!-- Black patch on body -->
-        <path d="M78 240 Q90 200 130 210 Q140 260 110 290 Q85 280 78 240Z" fill="#222"/>
-
-        <!-- Left leg -->
-        <rect x="105" y="330" width="28" height="42" rx="14" fill="white" stroke="#222" stroke-width="3"/>
-        <!-- Right leg -->
-        <rect x="165" y="330" width="28" height="42" rx="14" fill="white" stroke="#222" stroke-width="3"/>
-
-        <!-- Left foot (black) -->
-        <ellipse cx="119" cy="374" rx="20" ry="10" fill="#222"/>
-        <!-- Right foot (black) -->
-        <ellipse cx="179" cy="374" rx="20" ry="10" fill="#222"/>
-
-        <!-- Left arm -->
-        <path d="M80 250 Q40 240 30 260 Q40 280 80 275" fill="white" stroke="#222" stroke-width="3"/>
-        <!-- Right arm (holding heart) -->
-        <path d="M220 250 Q260 235 275 255 Q265 278 220 272" fill="white" stroke="#222" stroke-width="3"/>
-
-        <!-- Heart in right hand -->
-        <g transform="translate(268, 238)" class="heart-hand">
-          <path d="M0,-10 C-12,-22 -28,-10 -14,4 L0,18 L14,4 C28,-10 12,-22 0,-10Z" fill="#e74c3c"/>
-        </g>
-
-        <!-- Head -->
-        <ellipse cx="150" cy="160" rx="78" ry="72" fill="white" stroke="#222" stroke-width="3"/>
-
-        <!-- Black ear (left) -->
-        <path d="M72 130 Q50 90 68 70 Q90 80 100 120Z" fill="#222"/>
-        <!-- White ear highlight -->
-        <path d="M76 125 Q60 95 72 78 Q88 86 96 118Z" fill="#333" opacity="0.3"/>
-
-        <!-- Black patch on head -->
-        <path d="M72 130 Q80 100 110 105 Q118 130 105 155 Q85 158 72 130Z" fill="#222"/>
-
-        <!-- Eyes -->
-        <ellipse cx="128" cy="148" rx="10" ry="11" fill="#222"/>
-        <ellipse cx="172" cy="148" rx="10" ry="11" fill="#222"/>
-        <!-- Eye shine -->
-        <circle cx="131" cy="144" r="3.5" fill="white"/>
-        <circle cx="175" cy="144" r="3.5" fill="white"/>
-
-        <!-- Nose -->
-        <ellipse cx="150" cy="170" rx="14" ry="9" fill="#222"/>
-        <!-- Nose shine -->
-        <ellipse cx="145" cy="167" rx="4" ry="3" fill="#555" opacity="0.6"/>
-
-        <!-- Smile -->
-        <path d="M130 185 Q150 202 170 185" stroke="#222" stroke-width="3" fill="none" stroke-linecap="round"/>
-
-        <!-- Cheeks blush -->
-        <ellipse cx="112" cy="172" rx="12" ry="7" fill="#ffb3c1" opacity="0.5"/>
-        <ellipse cx="188" cy="172" rx="12" ry="7" fill="#ffb3c1" opacity="0.5"/>
-
-        <!-- Collar / scarf (red) -->
-        <path d="M90 215 Q150 230 210 215 Q205 235 150 240 Q95 235 90 215Z" fill="#e74c3c"/>
-        <!-- Collar stripe -->
-        <path d="M90 215 Q150 230 210 215" stroke="#c0392b" stroke-width="2" fill="none"/>
-
-        <!-- Woodstock on head -->
-        <g transform="translate(162, 88)">
-          <!-- Woodstock body -->
-          <ellipse cx="0" cy="0" rx="16" ry="12" fill="#f1c40f"/>
-          <!-- Woodstock head -->
-          <ellipse cx="14" cy="-8" rx="10" ry="9" fill="#f1c40f"/>
-          <!-- Beak -->
-          <path d="M22,-8 L30,-6 L22,-4Z" fill="#e67e22"/>
-          <!-- Eye -->
-          <circle cx="17" cy="-10" r="2.5" fill="#222"/>
-          <circle cx="18" cy="-11" r="1" fill="white"/>
-          <!-- Wing -->
-          <path d="M-14,-4 Q-22,4 -12,10 Q-4,4 0,0Z" fill="#f39c12"/>
-          <!-- Feet -->
-          <line x1="-4" y1="12" x2="-8" y2="20" stroke="#e67e22" stroke-width="2"/>
-          <line x1="4" y1="12" x2="4" y2="20" stroke="#e67e22" stroke-width="2"/>
-          <!-- Tuft -->
-          <path d="M10,-17 Q14,-24 18,-17" stroke="#e67e22" stroke-width="2" fill="none"/>
-        </g>
-      </svg>
+    <!-- SNOOPY IMAGE WITH HEARTS ORBIT -->
+    <div class="snoopy-image-wrap">
+      <img src="snoopy_hug.png" alt="Snoopy abrazando a Woodstock" />
+      <div class="heart-orbit">
+        <div class="heart">❤️</div>
+        <div class="heart">❤️</div>
+        <div class="heart">❤️</div>
+        <div class="heart">❤️</div>
+        <div class="heart">❤️</div>
+        <div class="heart">❤️</div>
+      </div>
     </div>
 
   </div>
 
-  <!-- ===== DOGHOUSE ===== -->
-  <div class="doghouse-wrap">
-    <svg viewBox="0 0 200 180" xmlns="http://www.w3.org/2000/svg" width="180">
-      <!-- Roof -->
-      <polygon points="100,10 190,80 10,80" fill="#e74c3c" stroke="#c0392b" stroke-width="2"/>
-      <!-- Roof ridge -->
-      <polygon points="100,10 190,80 175,80 100,22 25,80 10,80" fill="#c0392b"/>
-      <!-- House body -->
-      <rect x="20" y="78" width="160" height="100" rx="4" fill="#f5f5f5" stroke="#ddd" stroke-width="2"/>
-      <!-- Door -->
-      <ellipse cx="100" cy="178" rx="35" ry="42" fill="#8B4513"/>
-      <ellipse cx="100" cy="178" rx="28" ry="35" fill="#6B3410"/>
-      <!-- "SNOOPY" text -->
-      <text x="100" y="68" text-anchor="middle" font-family="Arial Black, sans-serif" font-size="13" font-weight="900" fill="white" letter-spacing="1">SNOOPY</text>
-      <!-- Window left -->
-      <rect x="30" y="95" width="40" height="35" rx="4" fill="#aed6f1" stroke="#85c1e9" stroke-width="2"/>
-      <line x1="50" y1="95" x2="50" y2="130" stroke="#85c1e9" stroke-width="1.5"/>
-      <line x1="30" y1="112" x2="70" y2="112" stroke="#85c1e9" stroke-width="1.5"/>
-      <!-- Window right -->
-      <rect x="130" y="95" width="40" height="35" rx="4" fill="#aed6f1" stroke="#85c1e9" stroke-width="2"/>
-      <line x1="150" y1="95" x2="150" y2="130" stroke="#85c1e9" stroke-width="1.5"/>
-      <line x1="130" y1="112" x2="170" y2="112" stroke="#85c1e9" stroke-width="1.5"/>
-    </svg>
-  </div>
-
-  <!-- ===== GROUND & CHARACTERS STRIP ===== -->
+  <!-- ===== GROUND STRIP ===== -->
   <svg class="ground" viewBox="0 0 1440 160" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
     <!-- Hills -->
     <ellipse cx="200" cy="160" rx="300" ry="100" fill="#a8d8a8" opacity="0.6"/>
